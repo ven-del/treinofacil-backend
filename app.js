@@ -19,10 +19,10 @@ app.use((req, res, next) => {
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const URL = 'localhost'
 app.listen(PORT, () => {
   console.log(
-    `Servidor rodando em http://${URL}:${PORT} no ambiente ${process.env.NODE_ENV}`
+    `Servidor rodando em http://${URL}:${PORT}`
   );
 });
