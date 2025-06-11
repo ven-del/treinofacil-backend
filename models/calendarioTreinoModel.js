@@ -104,10 +104,10 @@ const calendarioTreinoModel = {
         }
         return data;
     },
-    
+
     async deleteEvento(eventoId) {
         if (!eventoId) {
-            throw new Error("ID do evento é obrigatório para deleção.");
+            throw new Error("ID do evento é obrigatório para exclusão.");
         }
         const { error, count } = await supabase
             .from(CALENDARIO_TREINO_TABLE)

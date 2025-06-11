@@ -87,7 +87,7 @@ const planoTreinamentoModel = {
 
     async deletePlano(planoId) {
         if (!planoId) {
-            throw new Error("ID do plano é obrigatório para deleção.");
+            throw new Error("ID do plano é obrigatório para exclusão.");
         }
         const { error, count } = await supabase
             .from(PLANOS_TREINAMENTO_TABLE)
