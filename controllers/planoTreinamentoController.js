@@ -1,4 +1,4 @@
-const planoTreinamentoModel = require('../models/planoTreinamentoModel');
+const planosTreinamentoModel = require('../models/planosTreinamentoModel');
 
 const planoTreinamentoController = {
     async getActivePlanos(req, res) {
@@ -9,7 +9,7 @@ const planoTreinamentoController = {
         }
 
         try {
-            const planos = await planoTreinamentoModel.getPlanosByAlunoId(alunoId, true); 
+            const planos = await planosTreinamentoModel.getPlanosByAlunoId(alunoId, true); 
 
             if (!planos || planos.length === 0) {
                 return res.status(200).json({ 
@@ -40,7 +40,7 @@ const planoTreinamentoController = {
         }
 
         try {
-            const plano = await planoTreinamentoModel.getPlanoById(planoId);
+            const plano = await planosTreinamentoModel.getPlanoById(planoId);
 
             if (!plano) {
                 return res.status(404).json({ message: "Plano de treinamento não encontrado." });
