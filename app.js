@@ -7,8 +7,7 @@ const errorHandler = require("./middlewares/errorHandler");
 
 app.use(express.json());
 
-// Descomentar a rota depois de criar
-// app.use("/api", publicRoutes);
+app.use("/api", publicRoutes);
 app.use("/api/aluno", alunoRoutes);
 
 app.use((req, res, next) => {

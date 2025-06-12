@@ -90,7 +90,7 @@ const exercicioModel = {
 
     async deleteExercicio(exercicioId) {
         if (!exercicioId) {
-            throw new Error("ID do exercício é obrigatório para deleção.");
+            throw new Error("ID do exercício é obrigatório para exclusão.");
         }
         const { error, count } = await supabase
             .from(EXERCICIOS_TABLE)
