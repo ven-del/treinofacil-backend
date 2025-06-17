@@ -4,8 +4,10 @@ const app = express();
 const publicRoutes = require("./routes/publicRoutes");
 const alunoRoutes = require("./routes/alunoRoutes");
 const errorHandler = require("./middlewares/errorHandler");
+const cors = require ('cors')
 
 app.use(express.json());
+app.use(cors)
 
 app.use("/api", publicRoutes);
 app.use("/api/aluno", alunoRoutes);
