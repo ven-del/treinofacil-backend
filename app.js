@@ -9,8 +9,8 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-app.use("/api", publicRoutes);
-app.use("/api/aluno", alunoRoutes);
+app.use("/", publicRoutes);
+app.use("/app/aluno", alunoRoutes);
 
 app.use((req, res, next) => {
   const error = new Error(`Não encontrado - ${req.originalUrl}`);
