@@ -4,7 +4,7 @@ const app = express();
 const publicRoutes = require("./routes/publicRoutes");
 const alunoRoutes = require("./routes/alunoRoutes");
 const errorHandler = require("./middlewares/errorHandler");
-const cors = require('cors');
+const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
@@ -21,9 +21,7 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 const PORT = 3000;
-const URL = 'localhost'
+const URL = "localhost";
 app.listen(PORT, () => {
-  console.log(
-    `Servidor rodando em http://${URL}:${PORT}`
-  );
+  console.log(`Servidor rodando em http://${URL}:${PORT}`);
 });
