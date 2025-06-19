@@ -22,10 +22,10 @@ app.use((req, res, next) => {
 
 app.use(errorHandler);
 
-const PORT = 3000;
-const URL = "localhost";
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://${URL}:${PORT}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(3000, () => {
+    console.log("Server running on port 3000");
+  });
+}
 
 module.exports = app;
