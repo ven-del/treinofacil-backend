@@ -1,86 +1,50 @@
 const express = require("express");
 const router = express.Router();
 
-const authenticateToken = require("../middlewares/authMiddleware");
+const { authenticateToken } = require("../middlewares/authMiddleware");
 
 const alunoController = require("../controllers/alunoController");
+
 const planoTreinamentoController = require("../controllers/planoTreinamentoController");
 const questController = require("../controllers/questController");
 const calendarioTreinoController = require("../controllers/calendarioTreinoController");
+const exercicioController = require("../controllers/exercicioController");
 const exerciciosDiaController = require("../controllers/exerciciosDiaController");
 
-// Rotas de perfil do aluno
-router.get("/profile", authenticateToken, alunoController.getProfile);
-router.put("/profile", authenticateToken, alunoController.updateProfile);
-router.post(
-  "/change-password",
-  authenticateToken,
-  alunoController.changePassword
-);
+router.use(authenticateToken);
 
-// Rotas de planos de treinamento
-router.get(
-  "/planos",
-  authenticateToken,
-  planoTreinamentoController.getActivePlanos
-);
-router.get(
-  "/planos/:id",
-  authenticateToken,
-  planoTreinamentoController.getPlanoDetails
-);
-router.get(
-  "/plano-atribuido",
-  authenticateToken,
-  planoTreinamentoController.getPlanoAtribuido
-);
+router.get("/profile", alunoController.getProfile);
+router.put("/profile", alunoController.updateProfile);
+router.post("/change-password", alunoController.changePassword);
 
-// Rotas de quests
-router.get("/quests", authenticateToken, questController.getAlunoQuests);
-router.get("/quests/:id", authenticateToken, questController.getQuestDetails);
-router.put(
-  "/quests/:id/complete",
-  authenticateToken,
-  questController.completeQuest
-);
+router.get("/planos", planoTreinamentoController.getActivePlanos);
+router.get("/planos/:id", planoTreinamentoController.getPlanoDetails);
 
-// Rotas de calendário de treino
-router.get(
-  "/calendario/:date",
-  authenticateToken,
-  calendarioTreinoController.getDailySchedule
-);
+router.get("/planos", planoTreinamentoController.getPlanosByAluno);
+router.get("/planos/:id", planoTreinamentoController.getPlanoById);
+
+
+router.get("/calendario/:date", calendarioTreinoController.getDailySchedule);
 router.put(
   "/treinos/:id/status",
-  authenticateToken,
   calendarioTreinoController.updateTreinoStatus
 );
 
-// Rotas de exercícios do dia
+router.get("/exercicios", exercicioController.getAllExercicios);
+router.get("/exercicios/:id", exercicioController.getExercicioById);
 router.get(
-  "/exercicios-hoje/:aluno_id",
-  authenticateToken,
+  "/exercicios-dia/:aluno_id",
   exerciciosDiaController.getExerciciosDoDia
 );
 router.get(
-  "/exercicios-periodo/:aluno_id",
-  authenticateToken,
-  exerciciosDiaController.getExerciciosPorPeriodo
-);
-router.get(
-  "/exercicio-detalhe/:treino_exercicio_id",
-  authenticateToken,
+  "/exercicios-dia/detalhe/:treino_exercicio_id",
   exerciciosDiaController.getDetalheExercicio
 );
-router.put(
-  "/exercicio/:treino_exercicio_id/carga",
-  authenticateToken,
-  exerciciosDiaController.atualizarCargaAtual
-);
-router.put(
-  "/exercicio/:treino_exercicio_id/observacoes",
-  authenticateToken,
-  exerciciosDiaController.adicionarObservacoesAluno
-);
+
+router.get("/quests", questController.getAlunoQuests);
+router.put("/quests/:id/complete", questController.completeQuest);
+router.get("/quests", questController.getQuestsByAluno);
+router.get("/quests/:id", questController.getQuestById);
+router.patch("/quests/:id/status", questController.updateQuestStatus);
 
 module.exports = router;

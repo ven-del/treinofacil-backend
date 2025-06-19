@@ -105,8 +105,7 @@ const alunoController = {
         {
           password: newPassword,
         },
-        {
-        }
+        {}
       );
 
       if (error) {
@@ -125,7 +124,7 @@ const alunoController = {
         error: error.message,
       });
     }
-  }
+  },
 };
 
 module.exports = alunoController;

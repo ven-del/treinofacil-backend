@@ -7,26 +7,26 @@ const questModel = {
     if (
       !questData ||
       !questData.aluno_id ||
+      !questData.professor_id ||
       !questData.titulo ||
       !questData.data_inicio
     ) {
       throw new Error(
-        "Dados de quest inválidos: aluno_id, titulo e data_inicio são obrigatórios."
+        "Dados da quest inválidos: aluno_id, professor_id, titulo e data_inicio são obrigatórios."
       );
     }
-
-    const status = questData.status || "pendente";
 
     const { data, error } = await supabase
       .from(QUESTS_TABLE)
       .insert({
         aluno_id: questData.aluno_id,
+        professor_id: questData.professor_id,
         titulo: questData.titulo,
-        descricao: questData.descricao || null,
-        recompensa: questData.recompensa || null,
+        descricao: questData.descricao,
+        recompensa: questData.recompensa,
         data_inicio: questData.data_inicio,
-        data_fim: questData.data_fim || null,
-        status: status,
+        data_fim: questData.data_fim,
+        status: questData.status || "pendente",
       })
       .select()
       .single();
@@ -44,7 +44,13 @@ const questModel = {
     }
     const { data, error } = await supabase
       .from(QUESTS_TABLE)
-      .select("*")
+      .select(
+        `
+                *,
+                aluno:aluno_id(id, nome, email),
+                professor:professor_id(id, nome, email)
+            `
+      )
       .eq("id", questId)
       .single();
 
@@ -55,26 +61,32 @@ const questModel = {
     return data;
   },
 
-  async getQuestsByAlunoId(alunoId, status = null) {
+  async getQuestsByAluno(alunoId, status = null) {
     if (!alunoId) {
-      throw new Error("ID do aluno é obrigatório para buscar quests.");
+      throw new Error("ID do aluno é obrigatório para busca.");
     }
 
-    let query = supabase.from(QUESTS_TABLE).select("*").eq("aluno_id", alunoId);
+    let query = supabase
+      .from(QUESTS_TABLE)
+      .select(
+        `
+                *,
+                professor:professor_id(id, nome, email)
+            `
+      )
+      .eq("aluno_id", alunoId);
 
     if (status) {
       query = query.eq("status", status);
     }
 
-    query = query.order("data_inicio", { ascending: true });
-
-    const { data, error } = await query;
+    const { data, error } = await query.order("data_inicio", {
+      ascending: false,
+    });
 
     if (error) {
-      console.error("Erro ao buscar quests por aluno ID:", error.message);
-      throw new Error(
-        `Não foi possível buscar quests para o aluno: ${error.message}`
-      );
+      console.error("Erro ao buscar quests do aluno:", error.message);
+      throw new Error(`Não foi possível buscar quests: ${error.message}`);
     }
     return data;
   },
@@ -97,28 +109,23 @@ const questModel = {
     return data;
   },
 
-  async updateQuestStatus(questId, newStatus) {
-    if (!questId || !newStatus) {
-      throw new Error("ID da quest e novo status são obrigatórios.");
+  async updateQuestStatus(questId, status) {
+    if (!questId || !status) {
+      throw new Error(
+        "ID da quest e status são obrigatórios para atualização."
+      );
     }
 
-    const allowedStatuses = [
-      "pendente",
-      "em_progresso",
-      "concluida",
-      "cancelada",
-    ];
-    if (!allowedStatuses.includes(newStatus)) {
+    const validStatuses = ["pendente", "concluida", "cancelada"];
+    if (!validStatuses.includes(status)) {
       throw new Error(
-        `Status inválido: '${newStatus}'. Status permitidos são: ${allowedStatuses.join(
-          ", "
-        )}.`
+        "Status inválido. Deve ser um dos seguintes: pendente, concluida, cancelada"
       );
     }
 
     const { data, error } = await supabase
       .from(QUESTS_TABLE)
-      .update({ status: newStatus })
+      .update({ status })
       .eq("id", questId)
       .select()
       .single();
@@ -136,17 +143,16 @@ const questModel = {
     if (!questId) {
       throw new Error("ID da quest é obrigatório para exclusão.");
     }
-    const { error, count } = await supabase
+    const { error } = await supabase
       .from(QUESTS_TABLE)
       .delete()
-      .eq("id", questId)
-      .select("*", { count: "exact" });
+      .eq("id", questId);
 
     if (error) {
       console.error("Erro ao deletar quest:", error.message);
       throw new Error(`Não foi possível deletar a quest: ${error.message}`);
     }
-    return count > 0;
+    return true;
   },
 };
 

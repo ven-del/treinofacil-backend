@@ -42,6 +42,7 @@ const exercicioModel = {
       .single();
 
     if (error && error.code !== "PGRST116") {
+      // PGRST116 = no rows found
       console.error("Erro ao buscar exercício por ID:", error.message);
       throw new Error(`Erro ao buscar exercício: ${error.message}`);
     }
@@ -70,7 +71,7 @@ const exercicioModel = {
     if (!grupoMuscular) {
       throw new Error("Grupo muscular é obrigatório para busca por grupo.");
     }
-    return this.getAllExercicios(grupoMuscular); // Reutiliza a função genérica
+    return this.getAllExercicios(grupoMuscular);
   },
 
   async updateExercicio(exercicioId, updates) {

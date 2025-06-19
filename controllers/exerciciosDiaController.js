@@ -1,12 +1,11 @@
 const exerciciosDiaModel = require("../models/exerciciosDiaModel");
-const treinoExercicioModel = require("../models/treinoExercicioModel");
 
 const exerciciosDiaController = {
 
   async getExerciciosDoDia(req, res) {
     try {
       const { aluno_id } = req.params;
-      const { data } = req.query; // Data opcional via query parameter
+      const { data } = req.query; 
 
       if (!aluno_id) {
         return res.status(400).json({

@@ -6,35 +6,30 @@ const questController = {
     const { status } = req.query;
 
     if (!alunoId) {
-      return res.status(401).json({
-        success: false,
-        message:
-          "ID do aluno não encontrado na sessão. Usuário não autenticado.",
-      });
+      return res
+        .status(401)
+        .json({
+          message:
+            "ID do aluno não encontrado na sessão. Usuário não autenticado.",
+        });
     }
 
     try {
-      const quests = await questModel.getQuestsByAlunoId(alunoId, status);
+      const quests = await questModel.getQuestsByAluno(alunoId, status);
 
       if (!quests || quests.length === 0) {
         const statusMessage = status ? ` com status '${status}'` : "";
-        return res.status(200).json({
-          success: true,
-          message: `Nenhuma quest encontrada para este aluno${statusMessage}.`,
-          data: {
+        return res
+          .status(200)
+          .json({
+            message: `Nenhuma quest encontrada para este aluno${statusMessage}.`,
             quests: [],
-          },
-        });
+          });
       }
 
       return res.status(200).json({
-        success: true,
         message: "Quests recuperadas com sucesso.",
-        data: {
-          total_quests: quests.length,
-          filtro_status: status || "todos",
-          quests: quests,
-        },
+        quests: quests,
       });
     } catch (error) {
       console.error(
@@ -44,7 +39,6 @@ const questController = {
         error.message
       );
       return res.status(500).json({
-        success: false,
         message: "Erro interno do servidor ao buscar quests.",
         error: error.message,
       });
@@ -56,41 +50,36 @@ const questController = {
     const questId = req.params.id;
 
     if (!alunoId) {
-      return res.status(401).json({
-        success: false,
-        message:
-          "ID do aluno não encontrado na sessão. Usuário não autenticado.",
-      });
+      return res
+        .status(401)
+        .json({
+          message:
+            "ID do aluno não encontrado na sessão. Usuário não autenticado.",
+        });
     }
     if (!questId) {
-      return res.status(400).json({
-        success: false,
-        message: "ID da quest é obrigatório.",
-      });
+      return res.status(400).json({ message: "ID da quest é obrigatório." });
     }
 
     try {
       const quest = await questModel.getQuestById(questId);
 
       if (!quest) {
-        return res.status(404).json({
-          success: false,
-          message: "Quest não encontrada.",
-        });
+        return res.status(404).json({ message: "Quest não encontrada." });
       }
 
       if (quest.aluno_id !== alunoId) {
-        return res.status(403).json({
-          success: false,
-          message:
-            "Acesso negado: Esta quest não pertence ao aluno autenticado.",
-        });
+        return res
+          .status(403)
+          .json({
+            message:
+              "Acesso negado: Esta quest não pertence ao aluno autenticado.",
+          });
       }
 
       return res.status(200).json({
-        success: true,
         message: "Detalhes da quest recuperados com sucesso.",
-        data: quest,
+        quest: quest,
       });
     } catch (error) {
       console.error(
@@ -98,7 +87,6 @@ const questController = {
         error.message
       );
       return res.status(500).json({
-        success: false,
         message: "Erro interno do servidor ao buscar detalhes da quest.",
         error: error.message,
       });
@@ -110,34 +98,34 @@ const questController = {
     const questId = req.params.id;
 
     if (!alunoId) {
-      return res.status(401).json({
-        success: false,
-        message:
-          "ID do aluno não encontrado na sessão. Usuário não autenticado.",
-      });
+      return res
+        .status(401)
+        .json({
+          message:
+            "ID do aluno não encontrado na sessão. Usuário não autenticado.",
+        });
     }
     if (!questId) {
-      return res.status(400).json({
-        success: false,
-        message: "ID da quest é obrigatório para marcar como concluída.",
-      });
+      return res
+        .status(400)
+        .json({
+          message: "ID da quest é obrigatório para marcar como concluída.",
+        });
     }
 
     try {
       const questExistente = await questModel.getQuestById(questId);
 
       if (!questExistente) {
-        return res.status(404).json({
-          success: false,
-          message: "Quest não encontrada.",
-        });
+        return res.status(404).json({ message: "Quest não encontrada." });
       }
       if (questExistente.aluno_id !== alunoId) {
-        return res.status(403).json({
-          success: false,
-          message:
-            "Acesso negado: Esta quest não pertence ao aluno autenticado.",
-        });
+        return res
+          .status(403)
+          .json({
+            message:
+              "Acesso negado: Esta quest não pertence ao aluno autenticado.",
+          });
       }
 
       const updatedQuest = await questModel.updateQuestStatus(
@@ -146,9 +134,8 @@ const questController = {
       );
 
       return res.status(200).json({
-        success: true,
         message: "Quest marcada como concluída com sucesso.",
-        data: updatedQuest,
+        quest: updatedQuest,
       });
     } catch (error) {
       console.error(
@@ -156,13 +143,9 @@ const questController = {
         error.message
       );
       if (error.message.includes("Status inválido")) {
-        return res.status(400).json({
-          success: false,
-          message: error.message,
-        });
+        return res.status(400).json({ message: error.message });
       }
       return res.status(500).json({
-        success: false,
         message: "Erro interno do servidor ao marcar quest como concluída.",
         error: error.message,
       });
@@ -170,136 +153,70 @@ const questController = {
   },
 
   async createQuest(req, res) {
-    const {
-      aluno_id,
-      titulo,
-      descricao,
-      recompensa,
-      data_inicio,
-      data_fim,
-      status,
-    } = req.body;
-
-    if (!titulo || !data_inicio || !aluno_id) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Título, data de início e aluno_id são obrigatórios para criar uma quest.",
-      });
-    }
-
     try {
-      const newQuest = await questModel.createQuest({
-        aluno_id,
-        titulo,
-        descricao,
-        recompensa,
-        data_inicio,
-        data_fim,
-        status,
-      });
-      return res.status(201).json({
-        success: true,
-        message: "Quest criada com sucesso.",
-        data: newQuest,
-      });
+      const quest = await questModel.createQuest(req.body);
+      res.status(201).json(quest);
     } catch (error) {
-      console.error("Erro ao criar quest:", error.message);
-      return res.status(500).json({
-        success: false,
-        message: "Erro interno do servidor ao criar quest.",
-        error: error.message,
-      });
+      console.error("Erro ao criar quest:", error);
+      res.status(400).json({ error: error.message });
     }
   },
 
-  async updateQuest(req, res) {
-    const questId = req.params.id;
-    const updates = req.body;
-
-    if (!questId || Object.keys(updates).length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "ID da quest e dados de atualização são obrigatórios.",
-      });
-    }
-
-    const allowedUpdates = [
-      "titulo",
-      "descricao",
-      "recompensa",
-      "data_inicio",
-      "data_fim",
-      "status",
-    ];
-    const filteredUpdates = {};
-    for (const key of allowedUpdates) {
-      if (updates[key] !== undefined) {
-        filteredUpdates[key] = updates[key];
-      }
-    }
-    if (Object.keys(filteredUpdates).length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Nenhum campo permitido para atualização foi fornecido.",
-      });
-    }
-
+  async getQuestById(req, res) {
     try {
-      const updatedQuest = await questModel.updateQuest(
-        questId,
-        filteredUpdates
-      );
-      if (!updatedQuest) {
-        return res.status(404).json({
-          success: false,
-          message: "Quest não encontrada para atualização.",
-        });
+      const quest = await questModel.getQuestById(req.params.id);
+      if (!quest) {
+        return res.status(404).json({ error: "Quest não encontrada" });
       }
-      return res.status(200).json({
-        success: true,
-        message: "Quest atualizada com sucesso.",
-        data: updatedQuest,
-      });
+      res.json(quest);
     } catch (error) {
-      console.error(`Erro ao atualizar quest ${questId}:`, error.message);
-      return res.status(500).json({
-        success: false,
-        message: "Erro interno do servidor ao atualizar quest.",
-        error: error.message,
-      });
+      console.error("Erro ao buscar quest:", error);
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  async getQuestsByAluno(req, res) {
+    try {
+      const { status } = req.query;
+      const quests = await questModel.getQuestsByAluno(
+        req.params.alunoId,
+        status
+      );
+      res.json(quests);
+    } catch (error) {
+      console.error("Erro ao buscar quests do aluno:", error);
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  async updateQuestStatus(req, res) {
+    try {
+      const { status } = req.body;
+      if (!status) {
+        return res.status(400).json({ error: "Status é obrigatório" });
+      }
+
+      const quest = await questModel.updateQuestStatus(req.params.id, status);
+      if (!quest) {
+        return res.status(404).json({ error: "Quest não encontrada" });
+      }
+      res.json(quest);
+    } catch (error) {
+      console.error("Erro ao atualizar status da quest:", error);
+      res.status(400).json({ error: error.message });
     }
   },
 
   async deleteQuest(req, res) {
-    const questId = req.params.id;
-
-    if (!questId) {
-      return res.status(400).json({
-        success: false,
-        message: "ID da quest é obrigatório para exclusão.",
-      });
-    }
-
     try {
-      const deleted = await questModel.deleteQuest(questId);
+      const deleted = await questModel.deleteQuest(req.params.id);
       if (!deleted) {
-        return res.status(404).json({
-          success: false,
-          message: "Quest não encontrada para exclusão.",
-        });
+        return res.status(404).json({ error: "Quest não encontrada" });
       }
-      return res.status(200).json({
-        success: true,
-        message: "Quest deletada com sucesso.",
-      });
+      res.status(204).send();
     } catch (error) {
-      console.error(`Erro ao deletar quest ${questId}:`, error.message);
-      return res.status(500).json({
-        success: false,
-        message: "Erro interno do servidor ao deletar quest.",
-        error: error.message,
-      });
+      console.error("Erro ao deletar quest:", error);
+      res.status(400).json({ error: error.message });
     }
   },
 };
