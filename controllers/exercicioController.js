@@ -1,5 +1,6 @@
 const exercicioModel = require("../models/exercicioModel");
 
+
 const exercicioController = {
   async createExercicio(req, res) {
     try {
@@ -14,6 +15,7 @@ const exercicioController = {
   async getExercicioById(req, res) {
     try {
       const exercicio = await exercicioModel.getExercicioById(req.params.id);
+      console.log(exercicio)
       if (!exercicio) {
         return res.status(404).json({ error: "Exercício não encontrado" });
       }

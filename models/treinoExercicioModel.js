@@ -72,24 +72,54 @@ const treinoExercicioModel = {
 
   async getTreinoExercicioById(treinoExercicioId) {
     if (!treinoExercicioId) {
-      throw new Error(
-        "ID da associação treino_exercicio é obrigatório para busca."
-      );
+      throw new Error("ID da associação treino_exercicio é obrigatório para busca.");
     }
+  
     const { data, error } = await supabase
-      .from(TREINO_EXERCICIOS_TABLE)
-      .select("*")
+      .from("treino_exercicios")
+      .select(`
+        id,
+        ordem,
+        series,
+        repeticoes,
+        carga,
+        carga_atual,
+        observacoes_professor,
+        observacoes_aluno,
+        exercicios (
+          id,
+          nome,
+          grupo_muscular,
+          video_url
+        ),
+        treinos (
+          id,
+          nome,
+          descricao
+        )
+      `)
       .eq("id", treinoExercicioId)
       .single();
-
-    if (error && error.code !== "PGRST116") {
-      console.error(
-        "Erro ao buscar associação treino-exercício por ID:",
-        error.message
-      );
-      throw new Error(`Erro ao buscar associação: ${error.message}`);
+  
+    if (error) {
+      console.error("Erro ao buscar detalhes do treino_exercicio:", error.message);
+      throw new Error(`Erro ao buscar exercício: ${error.message}`);
     }
-    return data;
+  
+    return {
+      treino_exercicio_id: data.id,
+      nome: data.exercicios.nome,
+      grupo_muscular: data.exercicios.grupo_muscular,
+      video_url: data.exercicios.video_url,
+      series: data.series,
+      repeticoes: data.repeticoes,
+      carga: data.carga,
+      carga_atual: data.carga_atual,
+      observacoes_professor: data.observacoes_professor,
+      observacoes_aluno: data.observacoes_aluno,
+      restTime: 1,
+      completed: false 
+    };
   },
 
   async updateTreinoExercicio(treinoExercicioId, updates) {

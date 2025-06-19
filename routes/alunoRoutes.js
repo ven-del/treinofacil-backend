@@ -32,19 +32,19 @@ router.put(
 
 router.get("/exercicios", exercicioController.getAllExercicios);
 router.get("/exercicios/:id", exercicioController.getExercicioById);
-router.get(
-  "/exercicios-dia/:aluno_id",
-  exerciciosDiaController.getExerciciosDoDia
-);
-router.get(
-  "/exercicios-dia/detalhe/:treino_exercicio_id",
-  exerciciosDiaController.getDetalheExercicio
-);
+// router.get(
+//   "/exercicios-dia/:aluno_id/:date",
+//   exerciciosDiaController.getExerciciosDoDia
+// );
+// router.get(
+//   "/exercicios-dia/detalhe/:treino_exercicio_id",
+//   exerciciosDiaController.getDetalheExercicio
+// );
 
 router.get("/quests", questController.getAlunoQuests);
-router.put("/quests/:id/complete", questController.completeQuest);
 router.get("/quests", questController.getQuestsByAluno);
 router.get("/quests/:id", questController.getQuestById);
+router.put("/quests/:id/complete", questController.completeQuest);
 router.patch("/quests/:id/status", questController.updateQuestStatus);
 
 module.exports = router;

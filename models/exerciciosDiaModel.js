@@ -44,7 +44,6 @@ const exerciciosDiaModel = {
       )
       .eq("aluno_id", alunoId)
       .eq("data", dataConsulta)
-      .order("treinos.treino_exercicios.ordem", { ascending: true });
 
     if (error) {
       console.error("Erro ao buscar exercícios do dia:", error.message);

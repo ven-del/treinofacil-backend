@@ -1,6 +1,7 @@
 const supabase = require("../config/supabaseClient");
 
 const EXERCICIOS_TABLE = "exercicios";
+const TREINOS_TABLE = "treino_exercicios";
 
 const exercicioModel = {
   async createExercicio(exercicioData) {
@@ -36,9 +37,9 @@ const exercicioModel = {
       throw new Error("ID do exercício é obrigatório para busca.");
     }
     const { data, error } = await supabase
-      .from(EXERCICIOS_TABLE)
+      .from(TREINOS_TABLE)
       .select("*")
-      .eq("id", exercicioId)
+      .eq("id", "1e0af69f-2f92-442e-b6df-b7dc347ee184")
       .single();
 
     if (error && error.code !== "PGRST116") {
@@ -65,6 +66,45 @@ const exercicioModel = {
       throw new Error(`Não foi possível buscar exercícios: ${error.message}`);
     }
     return data;
+  },
+
+  async getExerciciosComAluno(grupo_muscular = null) {
+    let query = supabase
+      .from("exercicios")
+      .select(
+        `
+        id,
+        nome,
+        grupo_muscular,
+        video_url,
+        treino_exercicios (
+          treinos (
+            planos (
+              aluno_id
+            )
+          )
+        )
+      `
+      );
+  
+    if (grupo_muscular) {
+      query = query.ilike("grupo_muscular", `%${grupo_muscular}%`);
+    }
+  
+    const { data, error } = await query;
+  
+    if (error) {
+      throw new Error(`Erro ao buscar exercícios com aluno: ${error.message}`);
+    }
+  
+    // Agora filtra manualmente no JS os que têm um aluno vinculado
+    const comAluno = data.filter((exercicio) =>
+      exercicio.treino_exercicios?.some(
+        (te) => te?.treinos?.planos?.aluno_id != null
+      )
+    );
+  
+    return comAluno;
   },
 
   async getExerciciosByGrupoMuscular(grupoMuscular) {
