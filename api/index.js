@@ -12,6 +12,7 @@ app.use(
     origin: [
       "http://localhost:3000", // Local
       "https://labce-treinofacil-backend.vercel.app", // Produção
+      "http://localhost:5173", // Vite
     ],
     credentials: true,
   })
