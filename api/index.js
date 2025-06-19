@@ -1,9 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const publicRoutes = require("./routes/publicRoutes");
-const alunoRoutes = require("./routes/alunoRoutes");
-const professorRoutes = require("./routes/professorRoutes");
-const errorHandler = require("./middlewares/errorHandler");
+const publicRoutes = require("../routes/publicRoutes");
+const alunoRoutes = require("../routes/alunoRoutes");
+const professorRoutes = require("../routes/professorRoutes");
+const errorHandler = require("../middlewares/errorHandler");
 
 const app = express();
 
