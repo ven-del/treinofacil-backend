@@ -19,6 +19,9 @@ app.use(
 );
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  return res.json('Olá, mundo!');
+} )
 app.use("/api", publicRoutes);
 app.use("/api/aluno", alunoRoutes);
 app.use("/api/professor", professorRoutes);
