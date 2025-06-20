@@ -1,9 +1,12 @@
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const publicRoutes = require("../routes/publicRoutes");
 const alunoRoutes = require("../routes/alunoRoutes");
 const professorRoutes = require("../routes/professorRoutes");
 const errorHandler = require("../middlewares/errorHandler");
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
 
 const app = express();
 
@@ -20,9 +23,14 @@ app.use(
 );
 app.use(express.json());
 
+const swaggerDocument = YAML.load(
+  path.resolve(process.cwd(), "dist", "swagger.yaml")
+);
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.get("/", (req, res) => {
-  return res.json('Olá, mundo!');
-} )
+  return res.json("Olá, mundo!");
+});
 app.use("/api", publicRoutes);
 app.use("/api/aluno", alunoRoutes);
 app.use("/api/professor", professorRoutes);

@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: TreinoFacil API
+  version: 1.0.0
+  description: Endpoints para autenticação e listagem de exercícios dos alunos.
+servers:
+  - url: https://labce-treinofacil-backend.vercel.app
+    description: Produção
+paths:
+  /api/login:
+    post:
+      summary: Autenticação de usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login bem‑sucedido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciais inválidas
+  /api/aluno/exercicios:
+    get:
+      summary: Lista exercícios atribuídos ao aluno
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de exercícios do dia
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exercicio'
+        '401':
+          description: Usuário não autenticado
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: aluno@exemplo.com
+        senha:
+          type: string
+          example: senha123
+      required:
+        - email
+        - senha
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT de acesso
+    Exercicio:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nome:
+          type: string
+        grupo_muscular:
+          type: string
+        video_url:
+          type: string
+        series:
+          type: integer
+        repeticoes:
+          type: integer
+        ordem:
+          type: integer
