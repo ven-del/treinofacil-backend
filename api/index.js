@@ -24,7 +24,7 @@ app.use(
 app.use(express.json());
 
 const swaggerDocument = YAML.load(
-  path.resolve(process.cwd(), "dist", "swagger.yaml")
+  YAML.load(path.resolve(process.cwd(), "swagger.yaml"))
 );
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
